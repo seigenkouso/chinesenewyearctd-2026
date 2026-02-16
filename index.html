@@ -18,6 +18,32 @@
             user-select: none; -webkit-tap-highlight-color: transparent; 
         }
 
+        #music-control {
+            position: fixed; top: 20px; right: 20px;
+            width: 40px; height: 40px;
+            z-index: 200; 
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        #music-control:active { transform: scale(0.9); }
+
+        .music-rotating {
+            animation: rotatePlayer 3s linear infinite;
+        }
+        @keyframes rotatePlayer {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .icon-play, .icon-pause { width: 20px; height: 20px; fill: #ffd700; }
+        .icon-pause { display: none; }
+
         #danmaku-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 85%;
             z-index: 20; 
@@ -88,6 +114,15 @@
 </head>
 <body>
 
+    <audio id="bgm-player" loop>
+        <source src="bgm.wav" type="audio/wav">
+    </audio>
+
+    <div id="music-control" onclick="toggleMusic()">
+        <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </div>
+
     <div id="danmaku-container"></div>
     <div id="canvas-container"><canvas id="fireworks"></canvas></div>
 
@@ -122,6 +157,35 @@
         } catch (e) {
             console.error("Bmob 初始化失败", e);
         }
+
+        const audio = document.getElementById('bgm-player');
+        const musicBtn = document.getElementById('music-control');
+        const iconPlay = document.querySelector('.icon-play');
+        const iconPause = document.querySelector('.icon-pause');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+                musicBtn.classList.remove('music-rotating'); 
+            } else {
+                audio.play().then(() => {
+                    iconPlay.style.display = 'none';
+                    iconPause.style.display = 'block';
+                    musicBtn.classList.add('music-rotating'); 
+                }).catch(e => {
+                    console.log("播放被浏览器拦截");
+                });
+            }
+            isPlaying = !isPlaying;
+        }
+
+        document.body.addEventListener('click', function() {
+            if(!isPlaying) {
+            }
+        }, {once:true});
 
         const danmakuContainer = document.getElementById('danmaku-container');
         let processedIds = new Set(); 
@@ -292,6 +356,7 @@
         });
         animate();
     </script>
+
 </body>
 
 </html>
