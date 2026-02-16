@@ -7,7 +7,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎇</text></svg>">
     <script src="https://unpkg.com/hydrogen-js-sdk@2.5.1/dist/Bmob-2.5.1.min.js"></script>
     <style>
-        /* --- 基础样式 --- */
         body {
             margin: 0; padding: 0; overflow: hidden;
             background: linear-gradient(135deg, #a80000, #ff0000); 
@@ -19,18 +18,17 @@
             user-select: none; -webkit-tap-highlight-color: transparent; 
         }
 
-        /* --- 关键修改：提高了 z-index 到 20，确保飘在毛玻璃上面 --- */
         #danmaku-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 85%;
-            z-index: 20; /* 原来是5，现在改成20，高于 content 的 10 */
-            pointer-events: none; /* 关键：让点击穿透，不影响点马 */
+            z-index: 20; 
+            pointer-events: none; 
             overflow: hidden;
         }
 
         .danmaku-item {
             position: absolute; white-space: nowrap;
             font-size: 1.4rem; font-weight: 900;
-            text-shadow: 2px 2px 0 #000; /* 黑色描边，确保在亮背景上也看得清 */
+            text-shadow: 2px 2px 0 #000;
             opacity: 0.9;
             animation: moveLeft linear 1 forwards; 
         }
@@ -41,7 +39,7 @@
 
         .input-area {
             position: absolute; bottom: 30px; width: 92%; max-width: 500px;
-            display: flex; z-index: 100; /* 输入框层级最高 */
+            display: flex; z-index: 100; 
             background: rgba(255, 255, 255, 0.15); 
             padding: 8px;
             border-radius: 50px; border: 1px solid rgba(255,215,0,0.5);
@@ -65,7 +63,7 @@
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
         .content { 
-            z-index: 10; /* 这里是 10，所以弹幕的 20 会盖过它 */
+            z-index: 10; 
             text-align: center; margin-bottom: 80px;
             background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(12px);          
@@ -101,13 +99,10 @@
 
     <div class="input-area">
         <input type="text" id="danmaku-input" placeholder="输入祝福..." maxlength="40">
-        <button id="send-btn" onclick="sendBmobDanmaku()">✨ 发射</button>
+        <button id="send-btn" onclick="sendBmobDanmaku()">🎇 发射</button>
     </div>
 
     <script>
-        // ============================================
-        // ⚠️ 请在这里填入你的 Bmob 真实密钥
-        // ============================================
         const SECRET_KEY = "9ac11c753e9ad59c"; 
         const API_SAFE_CODE = "vgrwe83rtrwiveiw"; 
 
@@ -119,7 +114,7 @@
                 console.log("Bmob 初始化成功");
             }
         } catch (e) {
-            console.error("Bmob 初始化失败，将仅使用本地循环弹幕:", e);
+            console.error("Bmob 初始化失败", e);
         }
 
         const danmakuContainer = document.getElementById('danmaku-container');
@@ -138,7 +133,6 @@
             el.className = 'danmaku-item';
             el.innerText = text;
             
-            // 范围扩大到 5% - 90%，确保覆盖全屏
             el.style.top = (Math.random() * 85 + 5) + '%'; 
             el.style.color = isMine ? '#adff2f' : (Math.random() > 0.6 ? '#fff' : '#ffd700'); 
             if(isMine) el.style.zIndex = 999; 
@@ -201,9 +195,6 @@
             if(e.key === 'Enter') sendBmobDanmaku();
         });
 
-        // ============================================
-        // 核心逻辑：倒计时 (已移出危险区域)
-        // ============================================
         const targetDate = new Date("February 17, 2026 00:00:00").getTime();
         function updateTimer() {
             const now = new Date().getTime();
@@ -227,8 +218,13 @@
         }
         setInterval(updateTimer, 1000); updateTimer();
 
-        // 祝福语逻辑
-        const blessings = ["一马当先", "马到成功", "龙马精神", "万马奔腾", "发财暴富", "脱单成功", "代码无Bug"];
+        const blessings = [
+            "一马当先", "马到成功", "龙马精神", "万马奔腾", 
+            "汗马功劳", "天马行空", "老马识途", "金马迎春",
+            "财源广进", "身体健康", "学业有成", "代码无Bug",
+            "发财暴富", "脱单成功", "论文必过", "甲方不催",
+            "体重减半", "工资翻倍", "好运莲莲"
+        ];
         function giveBlessing() {
             const horse = document.getElementById("horse");
             const text = document.getElementById("blessing");
@@ -241,7 +237,6 @@
             createFirework(window.innerWidth/2, window.innerHeight/2);
         }
 
-        // 摇一摇检测
         let lastX=0, lastY=0, lastZ=0, lastTime=0, lastShakeTime=0;
         if (window.DeviceMotionEvent) {
             window.addEventListener('devicemotion', function(event) {
@@ -260,7 +255,6 @@
             });
         }
 
-        // Canvas 烟花
         const canvas = document.getElementById("fireworks"); const ctx = canvas.getContext("2d"); let particles = [];
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
@@ -293,4 +287,5 @@
         animate();
     </script>
 </body>
+
 </html>
